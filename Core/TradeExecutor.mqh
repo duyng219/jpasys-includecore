@@ -28,8 +28,8 @@ class CTradeExecutor
                                     CTradeExecutor(void);
         
         //Trade methods
-        ulong                       Buy(string pSymbol, double pVolume, double pStopLoss=0, double pTakeProfit=0, string pComment=NULL);
-        ulong                       Sell(string pSymbol, double pVolume, double pStopLoss=0, double pTakeProfit=0, string pComment=NULL);
+        ulong                       Buy(string pSymbol, double pVolume, double pPrice, double pStopLoss=0, double pTakeProfit=0, string pComment=NULL);
+        ulong                       Sell(string pSymbol, double pVolume, double pPrice, double pStopLoss=0, double pTakeProfit=0, string pComment=NULL);
         bool                        BuyStop(string pSymbol,double pVolume,double pPrice,double pStopLoss=0,double pTakeProfit=0,datetime pExpiration=0,string pComment=NULL);
 		bool                        SellStop(string pSymbol,double pVolume,double pPrice,double pStopLoss=0,double pTakeProfit=0,datetime pExpiration=0,string pComment=NULL);
 		
@@ -163,21 +163,21 @@ bool CTradeExecutor::OpenPending(string pSymbol,ENUM_ORDER_TYPE pType,double pVo
     else return false;   	
 }
 
-ulong CTradeExecutor::Buy(string pSymbol, double pVolume, double pStopLoss=0, double pTakeProfit=0, string pComment=NULL)
+ulong CTradeExecutor::Buy(string pSymbol, double pVolume, double pPrice, double pStopLoss=0, double pTakeProfit=0, string pComment=NULL)
 {
     pComment = "BUY" + " | " + pSymbol + " | " + string(magicNumber);
     double price = SymbolInfoDouble(pSymbol,SYMBOL_ASK);
 
-    ulong ticket = OpenPosition(pSymbol,ORDER_TYPE_BUY,pVolume,price,pStopLoss,pTakeProfit,pComment);
+    ulong ticket = OpenPosition(pSymbol,ORDER_TYPE_BUY,pVolume,pPrice,pStopLoss,pTakeProfit,pComment);
     return(ticket);
 }
 
-ulong CTradeExecutor::Sell(string pSymbol, double pVolume, double pStopLoss=0, double pTakeProfit=0, string pComment=NULL)
+ulong CTradeExecutor::Sell(string pSymbol, double pVolume, double pPrice, double pStopLoss=0, double pTakeProfit=0, string pComment=NULL)
 {
     pComment = "SELL" + " | " + pSymbol + " | " + string(magicNumber);
     double price = SymbolInfoDouble(pSymbol,SYMBOL_BID);
 		
-	ulong ticket = OpenPosition(pSymbol,ORDER_TYPE_SELL,pVolume,price,pStopLoss,pTakeProfit,pComment);
+	ulong ticket = OpenPosition(pSymbol,ORDER_TYPE_SELL,pVolume,pPrice,pStopLoss,pTakeProfit,pComment);
 	return(ticket);
 }
 

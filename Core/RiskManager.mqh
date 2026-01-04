@@ -81,24 +81,29 @@ double CRM::MoneyManagement(string pSymbol,ENUM_MONEY_MANAGEMENT pMoneyManagemen
 
 double CRM::CalculateVolumeRiskPerc(string pSymbol, double pRiskPercent, double pSLInPricePoints)
 {
-    if(pRiskPercent == 0 || pSLInPricePoints == 0)
+    if(pRiskPercent <= 0 || pSLInPricePoints <= 0)
     {
         Print(__FUNCTION__ + "() - Lỗi khi tính toán khối lượng phần trăm trên mỗi lệnh, vui lòng kiểm tra RiskPercent và SL");
         return 0;
     }
 
-     // maxRisk là số tiền tối đa có thể mất trong mỗi giao dịch, tính bằng cách nhân pRiskPercent với 0.01 và vốn hiện tại (ACCOUNT_EQUITY).
+    double tickValue = SymbolInfoDouble(pSymbol, SYMBOL_TRADE_TICK_VALUE);
+    if(tickValue <= 0)
+    {
+        Print(__FUNCTION__ + "() - Giá trị tickValue không hợp lệ, kiểm tra lại symbol: " + pSymbol);
+        return 0;
+    }
+
     double maxRisk = pRiskPercent * 0.01 * AccountInfoDouble(ACCOUNT_EQUITY);
+    double riskPerPoint = maxRisk / (pSLInPricePoints / SymbolInfoDouble(pSymbol, SYMBOL_POINT));
 
-    //tickValue là giá trị của một bước tick (độ dao động nhỏ nhất) cho một 1 lot, tính theo đơn vị tiền tệ của tài khoản - cần thận trọng: có thể không chính xác cho một số tài sản (ví dụ: một số cổ phiếu hoặc chỉ số)
-    double tickValue = SymbolInfoDouble(pSymbol,SYMBOL_TRADE_TICK_VALUE);
+    if(riskPerPoint <= 0)
+    {
+        Print(__FUNCTION__ + "() - Giá trị riskPerPoint không hợp lệ, kiểm tra lại SL và RiskPercent");
+        return 0;
+    }
 
-    //riskPerPoint là số tiền rủi ro trên mỗi điểm (số tiền mất cho mỗi chuyển động của điểm giá), tính bằng cách chia maxRisk cho số điểm dừng lỗ, quy đổi về số điểm chuẩn của tài sản (SYMBOL_POINT).
-    double riskPerPoint = maxRisk / (pSLInPricePoints / SymbolInfoDouble(pSymbol,SYMBOL_POINT));
-
-    // lotsRisked là khối lượng giao dịch tương ứng với số tiền rủi ro đã định, tính bằng cách chia riskPerPoint cho tickValue.
     double lotsRisked = riskPerPoint / tickValue;
-
     return lotsRisked;
 }
 
