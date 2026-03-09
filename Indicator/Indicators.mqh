@@ -145,3 +145,30 @@ int CiATR::Init(string pSymbol,ENUM_TIMEFRAMES pTimeframe,int pATRPeriod)
    
    return(handle);
 }
+
+//+------------------------------------------------------------------+
+//| Volume                                                           |
+//+------------------------------------------------------------------+
+class CiVolume : public CIndicator
+{
+    public:
+        int Init(string pSymbol, ENUM_TIMEFRAMES pTimeframe, ENUM_APPLIED_VOLUME pVolumeType);
+};
+
+int CiVolume::Init(string pSymbol, ENUM_TIMEFRAMES pTimeframe, ENUM_APPLIED_VOLUME pVolumeType)
+{
+    ResetLastError();
+    
+    handle = (int)iVolume(pSymbol, pTimeframe, pVolumeType);
+    
+    if(handle == INVALID_HANDLE)
+    {
+        Print("Đã xảy ra lỗi khi khởi tạo chỉ báo Volume: ", GetLastError());
+        return -1;
+    }
+
+    Print("..Volume Indicator đã được khởi tạo thành công.");
+
+    
+    return(handle);
+}
